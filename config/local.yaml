@@ -1,0 +1,4 @@
+env: "local"
+http_server:
+  address: "localhost"
+  port: "8081"
