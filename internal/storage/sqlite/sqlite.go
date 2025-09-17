@@ -8,6 +8,7 @@ import (
 
 	"github.com/lexcelent/payments-storage/internal/models"
 	"github.com/lexcelent/payments-storage/internal/storage"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type Storage struct {
