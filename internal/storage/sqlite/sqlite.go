@@ -23,7 +23,31 @@ func New(storagePath string) (*Storage, error) {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	return &Storage{db: db}, nil
+	s := &Storage{db: db}
+
+	// TODO: this is probably very bad decision to create table here
+	s.createTable()
+
+	return s, nil
+}
+
+func (s *Storage) createTable() error {
+	query := `
+		DROP TABLE IF EXISTS payments;
+		CREATE TABLE IF NOT EXISTS payments(
+			id INTEGER PRIMARY KEY,
+			payment_date DATETIME,
+			amount FLOAT,
+			email_shop TEXT,
+			email_customer TEXT
+		);
+	`
+	_, err := s.db.Exec(query)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Payment returns payment by id

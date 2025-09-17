@@ -8,6 +8,7 @@ import (
 	"github.com/lexcelent/payments-storage/internal/config"
 	"github.com/lexcelent/payments-storage/internal/storage/sqlite"
 	"github.com/lexcelent/payments-storage/internal/transport/http/handlers"
+	"github.com/lexcelent/payments-storage/internal/transport/http/handlers/payments/add"
 	"github.com/lexcelent/payments-storage/internal/transport/http/router"
 )
 
@@ -24,11 +25,16 @@ func main() {
 	log := setupLogger(cfg.Env)
 	log.Info("setup logger")
 
+	storage, err := sqlite.New(cfg.StoragePath)
+	if err != nil {
+		panic(err)
+	}
+
 	router := router.New()
 	log.Debug("setup router")
 
 	router.Handle("/healthCheck", handlers.HealthCheck)
-	router.Handle("/payments/add", handlers.PaymentAdd)
+	router.Handle("/payments/add", add.New(log, storage))
 
 	log.Info(
 		"server has been started",
@@ -36,15 +42,8 @@ func main() {
 		slog.String("port", cfg.HTTPServer.Port),
 	)
 
-	// TODO: move storage logic
-	_, err := sqlite.New(cfg.StoragePath)
-	if err != nil {
-		panic(err)
-	}
-	// END TODO
-
 	if err := http.ListenAndServe(":"+cfg.HTTPServer.Port, router); err != nil {
-		log.Error("Ошибка запуска HTTP-сервера")
+		log.Error("error during starting HTTP-Server")
 	}
 }
 
