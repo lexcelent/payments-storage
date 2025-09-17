@@ -1,12 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
 
 	"github.com/lexcelent/payments-storage/internal/config"
+	"github.com/lexcelent/payments-storage/internal/transport/http/handlers"
 	"github.com/lexcelent/payments-storage/internal/transport/http/router"
 )
 
@@ -26,9 +26,7 @@ func main() {
 	router := router.New()
 	log.Debug("setup router")
 
-	router.Handle("/healthCheck", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, `{"status": "healthy"}`)
-	})
+	router.Handle("/healthCheck", handlers.HealthCheck)
 
 	log.Info(
 		"server has been started",
