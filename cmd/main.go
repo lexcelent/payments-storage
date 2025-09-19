@@ -9,6 +9,7 @@ import (
 	"github.com/lexcelent/payments-storage/internal/storage/sqlite"
 	"github.com/lexcelent/payments-storage/internal/transport/http/handlers"
 	"github.com/lexcelent/payments-storage/internal/transport/http/handlers/payments/add"
+	"github.com/lexcelent/payments-storage/internal/transport/http/handlers/payments/get"
 	"github.com/lexcelent/payments-storage/internal/transport/http/router"
 )
 
@@ -21,7 +22,6 @@ const (
 func main() {
 	cfg := config.MustLoad()
 
-	// init logger
 	log := setupLogger(cfg.Env)
 	log.Info("setup logger")
 
@@ -35,6 +35,7 @@ func main() {
 
 	router.Handle("/healthCheck", handlers.HealthCheck)
 	router.Handle("/payments/add", add.New(log, storage))
+	router.Handle("/payments/get", get.New(log, storage))
 
 	log.Info(
 		"server has been started",

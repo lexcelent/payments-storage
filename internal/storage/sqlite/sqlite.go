@@ -32,8 +32,11 @@ func New(storagePath string) (*Storage, error) {
 }
 
 func (s *Storage) createTable() error {
+
+	// Сохранил на всякий случай
+	// DROP TABLE IF EXISTS payments;
+
 	query := `
-		DROP TABLE IF EXISTS payments;
 		CREATE TABLE IF NOT EXISTS payments(
 			id INTEGER PRIMARY KEY,
 			payment_date DATETIME,
@@ -42,6 +45,7 @@ func (s *Storage) createTable() error {
 			email_customer TEXT
 		);
 	`
+
 	_, err := s.db.Exec(query)
 	if err != nil {
 		return err
@@ -65,7 +69,7 @@ func (s *Storage) Payment(id int) (models.Payment, error) {
 	err = row.Scan(&payment.Id, &payment.PaymentDate, &payment.Amount, &payment.EmailCustomer, &payment.EmailShop)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return models.Payment{}, fmt.Errorf("%s: %w", op, storage.ErrPaymentNotExists)
+			return models.Payment{}, storage.ErrPaymentNotExists
 		}
 
 		return models.Payment{}, fmt.Errorf("%s: %w", op, err)
